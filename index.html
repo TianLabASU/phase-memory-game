@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#f4f2ed">
+  <meta name="description" content="An interactive conceptual model of phase separation buffering growth-mediated dilution in synthetic gene circuits.">
+  <title>Memory Under Growth</title>
+  <style>
+    :root{--ink:#151515;--paper:#f4f2ed;--panel:#fff;--muted:#6d6b66;--line:#d5d1c8;--green:#b8ef3f;--green-dark:#477410;--violet:#6d4aff;--red:#e3533f;--shadow:0 16px 44px rgba(28,26,21,.09)}
+    *{box-sizing:border-box} html{scroll-behavior:smooth} body{margin:0;background:var(--paper);color:var(--ink);font-family:Inter,ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.45}
+    button,input{font:inherit} button{cursor:pointer}.shell{max-width:1180px;margin:auto;padding:24px clamp(16px,4vw,48px) 52px}
+    header{display:flex;justify-content:space-between;gap:24px;align-items:flex-start;margin-bottom:26px}.kicker{font-size:.76rem;font-weight:800;letter-spacing:.15em;text-transform:uppercase}.tag{border:1px solid var(--ink);border-radius:99px;padding:7px 12px;font-size:.76rem;white-space:nowrap}
+    h1{font-family:Georgia,"Times New Roman",serif;font-size:clamp(2.4rem,6vw,5.3rem);line-height:.92;letter-spacing:-.055em;margin:12px 0 16px;max-width:850px}.dek{font-size:clamp(1rem,2vw,1.24rem);max-width:760px;color:#44413c;margin:0}
+    .experiment{margin-top:32px;background:var(--panel);border:1px solid var(--line);border-radius:22px;box-shadow:var(--shadow);overflow:hidden}.toolbar{padding:16px 18px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}.step{font-size:.78rem;font-weight:800;text-transform:uppercase;letter-spacing:.12em}.status{font-size:.86rem;color:var(--muted)}
+    .question{padding:22px 18px 16px;text-align:center}.question h2{font-family:Georgia,serif;font-size:clamp(1.35rem,3vw,2rem);margin:0 0 14px}.choices{display:flex;justify-content:center;gap:10px;flex-wrap:wrap}.choice{background:white;border:1px solid var(--ink);border-radius:999px;padding:10px 16px;font-weight:700}.choice:hover,.choice.selected{background:var(--ink);color:white}.choice:focus-visible,.primary:focus-visible,.ghost:focus-visible{outline:3px solid var(--violet);outline-offset:3px}
+    .cells{display:grid;grid-template-columns:1fr 1fr;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}.cell-panel{position:relative;min-width:0;padding:18px}.cell-panel+ .cell-panel{border-left:1px solid var(--line)}.panel-head{display:flex;justify-content:space-between;align-items:center;gap:10px}.panel-head h3{font-size:1rem;margin:0}.pill{font-size:.72rem;font-weight:800;padding:5px 9px;border-radius:99px;background:#eee}.pill.on{background:var(--green)}.pill.off{background:#ffd4ce;color:#8b1f13}
+    canvas.cell{width:100%;height:265px;display:block;margin-top:4px}.metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}.metric{background:#f5f3ee;border-radius:9px;padding:9px}.metric span{display:block;color:var(--muted);font-size:.68rem;text-transform:uppercase;letter-spacing:.07em}.metric strong{font-size:.98rem;font-variant-numeric:tabular-nums}
+    .control-row{display:flex;justify-content:space-between;align-items:center;gap:20px;padding:18px;flex-wrap:wrap}.time-wrap{display:flex;align-items:center;gap:12px;flex:1;min-width:240px}.time{font-variant-numeric:tabular-nums;font-weight:800;min-width:42px}.track{height:7px;background:#dedbd3;border-radius:10px;overflow:hidden;flex:1}.track i{display:block;height:100%;width:0;background:var(--ink);transition:width .1s linear}.actions{display:flex;gap:9px}.primary,.ghost{border-radius:10px;padding:11px 16px;font-weight:800}.primary{background:var(--ink);color:white;border:1px solid var(--ink)}.primary:disabled{opacity:.38;cursor:not-allowed}.ghost{background:white;color:var(--ink);border:1px solid var(--ink)}
+    .charts{padding:18px;border-top:1px solid var(--line)}.charts h3{margin:0 0 6px;font-size:.9rem}.legend{display:flex;gap:15px;flex-wrap:wrap;color:var(--muted);font-size:.72rem;margin-bottom:8px}.legend i{width:18px;height:3px;display:inline-block;vertical-align:middle;margin-right:5px}.chart{width:100%;height:320px;display:block}
+    .result{display:none;margin:0 18px 18px;padding:20px;border-radius:14px;background:#effbcf;border:1px solid #c1dd78}.result.show{display:block}.result h2{font-family:Georgia,serif;margin:0 0 6px;font-size:1.55rem}.result p{margin:6px 0;max-width:850px}.prediction{font-weight:800}
+    .explain{display:grid;grid-template-columns:1.15fr .85fr;gap:26px;margin-top:32px}.card{background:white;border:1px solid var(--line);border-radius:18px;padding:clamp(18px,3vw,28px)}.card h2{font-family:Georgia,serif;font-size:1.7rem;margin:0 0 10px}.card p{color:#4e4a45}.equation{background:var(--ink);color:white;padding:18px;border-radius:12px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:clamp(.72rem,1.5vw,.9rem);overflow:auto}.note{font-size:.82rem;color:var(--muted)!important}.mechanism{display:grid;gap:9px;margin-top:14px}.mechanism div{display:grid;grid-template-columns:32px 1fr;gap:10px;align-items:start}.num{width:28px;height:28px;border:1px solid;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:.78rem}.mechanism b{display:block;font-size:.9rem}.mechanism small{color:var(--muted)}
+    footer{margin-top:26px;color:var(--muted);font-size:.76rem}footer a{color:inherit}
+    @media(max-width:720px){header{display:block}.tag{display:inline-block;margin-top:18px}.cells{grid-template-columns:1fr}.cell-panel+.cell-panel{border-left:0;border-top:1px solid var(--line)}canvas.cell{height:230px}.explain{grid-template-columns:1fr}.charts{display:none}.control-row{align-items:stretch}.actions{width:100%}.actions button{flex:1}.metrics{gap:4px}.metric{padding:7px}.question{padding-inline:10px}}
+    @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto}.track i{transition:none}}
+  </style>
+</head>
+<body>
+<main class="shell">
+  <header>
+    <div><div class="kicker">Interactive research figure</div><h1>Can a cell remember while it grows?</h1><p class="dek">Test how phase-separated condensates protect a synthetic gene circuit from growth-mediated dilution.</p></div>
+    <div class="tag">Publication simulation · 45 seconds</div>
+  </header>
+
+  <section class="experiment" aria-label="Interactive dilution experiment">
+    <div class="toolbar"><span class="step" id="stepLabel">01 · Make a prediction</span><span class="status" id="statusText">Both circuits begin in the ON state</span></div>
+    <div class="question" id="question"><h2>After rapid growth, which circuit will remember its ON state?</h2><div class="choices" role="group" aria-label="Prediction"><button class="choice" data-choice="standard">Standard SA</button><button class="choice" data-choice="drop">Drop-SA</button><button class="choice" data-choice="both">Both</button></div></div>
+    <div class="cells">
+      <article class="cell-panel"><div class="panel-head"><h3>Standard SA circuit</h3><span class="pill on" id="stateA">MEMORY ON</span></div><canvas class="cell" id="cellA"></canvas><div class="metrics"><div class="metric"><span>Average TF</span><strong id="avgA">100%</strong></div><div class="metric"><span>Local TF</span><strong id="localA">100%</strong></div><div class="metric"><span>Output</span><strong id="outA">0</strong></div></div></article>
+      <article class="cell-panel"><div class="panel-head"><h3>Drop-SA circuit</h3><span class="pill on" id="stateB">MEMORY ON</span></div><canvas class="cell" id="cellB"></canvas><div class="metrics"><div class="metric"><span>Average TF</span><strong id="avgB">100%</strong></div><div class="metric"><span>Local TF</span><strong id="localB">100%</strong></div><div class="metric"><span>Output</span><strong id="outB">0</strong></div></div></article>
+    </div>
+    <div class="control-row"><div class="time-wrap"><span class="time" id="clock">0.0 h</span><div class="track" aria-hidden="true"><i id="progress"></i></div></div><div class="actions"><button class="ghost" id="resetBtn">Reset</button><button class="primary" id="runBtn" disabled>Run dilution experiment</button></div></div>
+    <div class="charts"><h3>Transcription factor concentration through time</h3><div class="legend"><span><i style="background:#777"></i>Standard: average/local TF</span><span><i style="background:#6d4aff"></i>Drop-SA: average TF</span><span><i style="background:#477410"></i>Drop-SA: local TF</span></div><canvas class="chart" id="chart" aria-label="TF concentration in micromolar versus time in hours"></canvas></div>
+    <div class="result" id="result"><h2 id="resultTitle">The condensate protects circuit memory.</h2><p class="prediction" id="predictionResult"></p><p>Growth lowers the average TF concentration in both cells. In the standard circuit, local TF falls below the activation threshold and positive feedback collapses. In Drop-SA, the condensate temporarily shrinks but maintains a high local TF concentration at the promoter, allowing expression to recover.</p></div>
+  </section>
+
+  <section class="explain">
+    <article class="card"><h2>The idea behind the game</h2><p>A self-activating circuit must keep enough transcription factor near its promoter to sustain its own production. Fast cell growth creates dilution. Fusing the TF to an intrinsically disordered region promotes condensate formation, enriching TF where it is needed.</p><div class="equation">change in TF = production − degradation − growth dilution</div><p class="note">The trajectories are generated from the publication’s Gillespie cell-growth and phase-separation model using its reported parameters. Fixed random seeds make this demonstration reproducible; an individual stochastic run is not an experimental measurement.</p></article>
+    <article class="card"><h2>What to watch</h2><div class="mechanism"><div><span class="num">1</span><span><b>Dilution begins</b><small>Both cells elongate and divide.</small></span></div><div><span class="num">2</span><span><b>The droplet shrinks</b><small>Average TF decreases, but enrichment persists.</small></span></div><div><span class="num">3</span><span><b>Memory diverges</b><small>Standard SA switches OFF; Drop-SA recovers.</small></span></div></div></article>
+  </section>
+  <footer>Inspired by Zhang et al., “Phase separation to buffer growth-mediated dilution in synthetic circuits,” <em>Cell</em> (2025). <a href="https://doi.org/10.1016/j.cell.2025.10.017" target="_blank" rel="noopener">View publication</a>.</footer>
+</main>
+<script src="data/publication-data.js"></script>
+<script>
+(() => {
+  const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+  const canvases={a:$('#cellA'),b:$('#cellB'),chart:$('#chart')};
+  const DATA=window.PUBLICATION_SIM_DATA;
+  const duration=DATA.metadata.duration_h, reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let prediction='', running=false, finished=false, t=0, start=0, raf=0;
+  let history=[];
+  const particles={a:[],b:[]}, TF_RADIUS=2.4;
+  const rand=(a,b)=>a+Math.random()*(b-a), clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
+  for(const key of ['a','b']) for(let i=0;i<62;i++) particles[key].push({x:rand(-.8,.8),y:rand(-.72,.72),phase:rand(0,6.28)});
+  function sample(series,time){const step=DATA.metadata.sample_interval_h,i=clamp(Math.floor(time/step),0,series.length-1),j=Math.min(i+1,series.length-1),f=(time-series[i].time)/Math.max(step,.0001),a=series[i],b=series[j],mix=k=>a[k]+(b[k]-a[k])*clamp(f,0,1);return {average_tf:mix('average_tf'),local_tf:mix('local_tf'),droplet_molecules:mix('droplet_molecules'),cell_volume_um3:mix('cell_volume_um3'),cumulative_output:mix('cumulative_output')}}
+  function model(time){const a=sample(DATA.standard_sa,time),b=sample(DATA.drop_sa,time),threshold=1/Math.sqrt(.6+(3-.6)*.001**3/(.001**3+.003**3));return {avgA:a.average_tf,localA:a.local_tf,avgB:b.average_tf,localB:b.local_tf,volA:a.cell_volume_um3,volB:b.cell_volume_um3,drop:clamp(b.droplet_molecules/420,.05,1),onA:a.local_tf>threshold,onB:b.local_tf>threshold,outA:a.cumulative_output,outB:b.cumulative_output,threshold}}
+  function fit(c){const d=devicePixelRatio||1,r=c.getBoundingClientRect(); if(c.width!==Math.round(r.width*d)||c.height!==Math.round(r.height*d)){c.width=Math.round(r.width*d);c.height=Math.round(r.height*d)} const x=c.getContext('2d');x.setTransform(d,0,0,d,0,0);return {x,w:r.width,h:r.height}}
+  function drawCell(c,key,m){
+    const {x,w,h}=fit(c), isDrop=key==='b', avg=isDrop?m.avgB:m.avgA, local=isDrop?m.localB:m.localA, on=isDrop?m.onB:m.onA,volume=isDrop?m.volB:m.volA;
+    const growthFraction=clamp((volume-.4)/.4,0,1);
+    x.clearRect(0,0,w,h); const cx=w/2,cy=h/2+5, baseW=Math.min(w*.72,310), cw=baseW*(.82+.18*growthFraction), ch=Math.min(h*.60,145);
+    x.save();x.translate(cx,cy);x.beginPath();x.roundRect(-cw/2,-ch/2,cw,ch,ch/2);x.fillStyle=on?'#f7faee':'#f1eeea';x.fill();x.lineWidth=2;x.strokeStyle='#151515';x.stroke();
+    const promoterX=-cw*.18,promoterY=8;
+    if(isDrop){const rr=34*m.drop+8;const g=x.createRadialGradient(promoterX,promoterY,2,promoterX,promoterY,rr);g.addColorStop(0,'rgba(184,239,63,.78)');g.addColorStop(1,'rgba(184,239,63,.12)');x.fillStyle=g;x.beginPath();x.arc(promoterX,promoterY,rr,0,Math.PI*2);x.fill();x.strokeStyle='#477410';x.setLineDash([3,3]);x.stroke();x.setLineDash([])}
+    const count=Math.round(particles[key].length*clamp(avg/2.7,.08,1));
+    for(let i=0;i<count;i++){
+      const p=particles[key][i],motion=t*3;let px=p.x*cw*.42+Math.sin(motion*1.13+p.phase+i*.37)*5,py=p.y*ch*.39+Math.cos(motion*.91+p.phase*1.7+i*.23)*4;
+      if(isDrop&&i<Math.round(count*.48)){const rr=(25*m.drop+5)*Math.sqrt((i+1)/Math.max(1,count*.48))+Math.sin(motion*1.4+p.phase)*1.7,ang=i*2.399+p.phase+Math.sin(motion+p.phase)*.18;px=promoterX+Math.cos(ang)*rr;py=promoterY+Math.sin(ang)*rr}
+      if(isDrop){x.strokeStyle='#6d4aff';x.lineWidth=1.15;x.lineCap='round';x.beginPath();x.moveTo(px+TF_RADIUS-1,py);x.bezierCurveTo(px+5,py-3+Math.sin(motion+p.phase)*2,px+7,py+3+Math.cos(motion*1.2+p.phase)*2,px+10,py+Math.sin(motion*1.7+p.phase)*2);x.stroke()}
+      x.fillStyle=isDrop?'#6d4aff':'#777';x.beginPath();x.arc(px,py,TF_RADIUS,0,Math.PI*2);x.fill();x.strokeStyle='#fff';x.lineWidth=.65;x.stroke();
+    }
+    /* Draw the promoter last so it remains visible inside the Drop-SA condensate. */
+    x.fillStyle='rgba(255,255,255,.84)';x.fillRect(promoterX-22,promoterY-11,44,22);x.fillStyle='#151515';x.fillRect(promoterX-16,promoterY-3,32,6);x.fillStyle='#e3533f';x.beginPath();x.arc(promoterX,promoterY,6.5,0,Math.PI*2);x.fill();x.strokeStyle='#151515';x.lineWidth=1;x.stroke();x.fillStyle='#151515';x.font='9px Inter, sans-serif';x.textAlign='center';x.fillText('promoter',promoterX,promoterY+20);
+    x.restore();x.fillStyle='#6d6b66';x.font='12px Inter, sans-serif';x.textAlign='center';x.fillText(t<.25?'Activated cell':t<4?'Rapid growth + dilution':on?'Circuit recovers':'Positive feedback collapses',cx,h-10);
+  }
+  function drawChart(){const {x,w,h}=fit(canvases.chart);x.clearRect(0,0,w,h);const pad={l:66,r:18,t:14,b:48},W=w-pad.l-pad.r,H=h-pad.t-pad.b,maxY=9;x.strokeStyle='#d5d1c8';x.lineWidth=1;for(let i=0;i<=3;i++){const y=pad.t+H*i/3;x.beginPath();x.moveTo(pad.l,y);x.lineTo(w-pad.r,y);x.stroke()}x.fillStyle='#777';x.font='11px Inter';x.textAlign='center';for(let i=0;i<=4;i++)x.fillText(String(i*5),pad.l+W*i/4,pad.t+H+18);x.textAlign='right';for(let i=0;i<=3;i++)x.fillText(String(9-i*3),pad.l-9,pad.t+H*i/3+4);x.fillStyle='#151515';x.font='12px Inter';x.textAlign='center';x.fillText('Time (h)',pad.l+W/2,h-8);x.save();x.translate(15,pad.t+H/2);x.rotate(-Math.PI/2);x.fillText('TF concentration (μM)',0,0);x.restore();
+    const line=(field,color,width=2)=>{if(history.length<2)return;x.strokeStyle=color;x.lineWidth=width;x.beginPath();history.forEach((d,i)=>{const px=pad.l+W*d.t/duration,py=pad.t+H*(1-clamp(d[field]/maxY,0,1));i?x.lineTo(px,py):x.moveTo(px,py)});x.stroke()};line('avgA','#777');line('avgB','#6d4aff');line('localB','#477410',3)
+  }
+  function render(){const m=model(t);drawCell(canvases.a,'a',m);drawCell(canvases.b,'b',m);drawChart();$('#clock').textContent=t.toFixed(1)+' h';$('#progress').style.width=(t/duration*100)+'%';$('#avgA').textContent=m.avgA.toFixed(2)+' μM';$('#localA').textContent=m.localA.toFixed(2)+' μM';$('#avgB').textContent=m.avgB.toFixed(2)+' μM';$('#localB').textContent=m.localB.toFixed(2)+' μM';$('#outA').textContent=m.outA.toFixed(1);$('#outB').textContent=m.outB.toFixed(1);setPill($('#stateA'),m.onA);setPill($('#stateB'),m.onB)}
+  function setPill(el,on){el.textContent=on?'MEMORY ON':'MEMORY LOST';el.className='pill '+(on?'on':'off')}
+  function frame(now){if(!running)return;const scale=reduced?6:2.5;t=Math.min(duration,(now-start)/1000*scale);const m=model(t);if(!history.length||t-history.at(-1).t>.06)history.push({t,...m});render();if(t<duration)raf=requestAnimationFrame(frame);else finish()}
+  function run(){if(running)return;running=true;finished=false;$('#runBtn').disabled=true;$('#question').style.display='none';$('#result').classList.remove('show');$('#stepLabel').textContent='02 · Observe the dilution';$('#statusText').textContent='Fresh medium drives rapid cell growth';start=performance.now();history=[];raf=requestAnimationFrame(frame)}
+  function finish(){running=false;finished=true;t=duration;render();$('#stepLabel').textContent='03 · Compare the outcomes';$('#statusText').textContent='Simulation complete after 20 hours';$('#result').classList.add('show');$('#predictionResult').textContent=prediction==='drop'?'Your prediction was correct: Drop-SA retained memory.':'You predicted '+(prediction==='both'?'both circuits':'the standard circuit')+'. The Drop-SA circuit retained memory.';$('#result').scrollIntoView({behavior:reduced?'auto':'smooth',block:'nearest'})}
+  function reset(){cancelAnimationFrame(raf);running=finished=false;t=0;history=[{t:0,...model(0)}];$('#question').style.display='block';$('#result').classList.remove('show');$('#stepLabel').textContent='01 · Make a prediction';$('#statusText').textContent='Both circuits begin in the ON state';prediction='';$$('.choice').forEach(b=>b.classList.remove('selected'));$('#runBtn').disabled=true;render()}
+  $$('.choice').forEach(b=>b.addEventListener('click',()=>{prediction=b.dataset.choice;$$('.choice').forEach(x=>x.classList.toggle('selected',x===b));$('#runBtn').disabled=false;$('#statusText').textContent='Prediction recorded — ready to begin'}));$('#runBtn').addEventListener('click',run);$('#resetBtn').addEventListener('click',reset);addEventListener('resize',render);reset();
+})();
+</script>
+</body>
+</html>
