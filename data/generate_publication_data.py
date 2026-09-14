@@ -78,19 +78,25 @@ def simulate(mu,seed,tmax=20.,step=.025):
                 elif i==2 and x[0]>0:x[0]-=1
                 elif i==3 and x[1]>0:x[1]-=1
                 break
+    if samples and samples[-1]["time"] < tmax:
+        final=dict(samples[-1])
+        final["time"]=float(tmax)
+        final["cumulative_output"] += final["transcription_rate"]*(tmax-samples[-1]["time"])
+        samples.append(final)
     return samples
 
 def main():
+    duration=10
     data={
       "metadata":{
         "description":"Seeded trajectories generated from the publication MATLAB model",
         "source_repository":"https://github.com/TianLab-ASU/PhaseSeparation_Growth_CircuitMemory/tree/main/Stochastic%20Simulation",
         "source_script":"Fig1_LLPS_StochasticSim_CellGrowth.m",
         "induction_initial_mM":.005,"induction_after_dilution_mM":.001,
-        "duration_h":20,"sample_interval_h":.025,"seeds":{"standard_sa":20251017,"drop_sa":20251018},
+        "duration_h":duration,"sample_interval_h":.025,"seeds":{"standard_sa":20251017,"drop_sa":20251018},
         "parameters":{"km":4,"km0":.16,"dm":8,"kp":10,"dp":2,"growthrate_per_h":1.3,"Vt_m3":4e-19,"V_TF_m3":1e-25,"Drop_Factor":.0005,"gamma_N_per_m":1e-6,"kBT_J":KBT,"mu_drop_J":MU0}
       },
-      "standard_sa":simulate(0,20251017),"drop_sa":simulate(MU0,20251018)
+      "standard_sa":simulate(0,20251017,tmax=duration),"drop_sa":simulate(MU0,20251018,tmax=duration)
     }
     out=Path(__file__).with_name('publication-trajectories.json')
     out.write_text(json.dumps(data,separators=(',',':')))
