@@ -61,7 +61,7 @@
   let history=[];
   const particles={a:[],b:[]}, TF_RADIUS=2.4;
   const rand=(a,b)=>a+Math.random()*(b-a), clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
-  for(const key of ['a','b']) for(let i=0;i<62;i++) particles[key].push({x:rand(-.8,.8),y:rand(-.72,.72),phase:rand(0,6.28)});
+  for(const key of ['a','b']) for(let i=0;i<62;i++) particles[key].push({x:rand(-.8,.8),y:rand(-.72,.72),phase:rand(0,6.28),clusterR:Math.sqrt(Math.random()),clusterA:rand(0,Math.PI*2),tailA:rand(0,Math.PI*2)});
   function sample(series,time){const step=DATA.metadata.sample_interval_h,i=clamp(Math.floor(time/step),0,series.length-1),j=Math.min(i+1,series.length-1),f=(time-series[i].time)/Math.max(step,.0001),a=series[i],b=series[j],mix=k=>a[k]+(b[k]-a[k])*clamp(f,0,1);return {average_tf:mix('average_tf'),local_tf:mix('local_tf'),droplet_molecules:mix('droplet_molecules'),cell_volume_um3:mix('cell_volume_um3'),cumulative_output:mix('cumulative_output')}}
   function model(time){const a=sample(DATA.standard_sa,time),b=sample(DATA.drop_sa,time),threshold=1/Math.sqrt(.6+(3-.6)*.001**3/(.001**3+.003**3));return {avgA:a.average_tf,localA:a.local_tf,avgB:b.average_tf,localB:b.local_tf,volA:a.cell_volume_um3,volB:b.cell_volume_um3,drop:clamp(b.droplet_molecules/420,.05,1),onA:a.local_tf>threshold,onB:b.local_tf>threshold,outA:a.cumulative_output,outB:b.cumulative_output,threshold}}
   function fit(c){const d=devicePixelRatio||1,r=c.getBoundingClientRect(); if(c.width!==Math.round(r.width*d)||c.height!==Math.round(r.height*d)){c.width=Math.round(r.width*d);c.height=Math.round(r.height*d)} const x=c.getContext('2d');x.setTransform(d,0,0,d,0,0);return {x,w:r.width,h:r.height}}
@@ -75,8 +75,8 @@
     const count=Math.round(particles[key].length*clamp(avg/2.7,.08,1));
     for(let i=0;i<count;i++){
       const p=particles[key][i],motion=t*3;let px=p.x*cw*.42+Math.sin(motion*1.13+p.phase+i*.37)*5,py=p.y*ch*.39+Math.cos(motion*.91+p.phase*1.7+i*.23)*4;
-      if(isDrop&&i<Math.round(count*.48)){const rr=(25*m.drop+5)*Math.sqrt((i+1)/Math.max(1,count*.48))+Math.sin(motion*1.4+p.phase)*1.7,ang=i*2.399+p.phase+Math.sin(motion+p.phase)*.18;px=promoterX+Math.cos(ang)*rr;py=promoterY+Math.sin(ang)*rr}
-      if(isDrop){x.strokeStyle='#6d4aff';x.lineWidth=1.15;x.lineCap='round';x.beginPath();x.moveTo(px+TF_RADIUS-1,py);x.bezierCurveTo(px+5,py-3+Math.sin(motion+p.phase)*2,px+7,py+3+Math.cos(motion*1.2+p.phase)*2,px+10,py+Math.sin(motion*1.7+p.phase)*2);x.stroke()}
+      if(isDrop&&i<Math.round(count*.48)){const rr=(25*m.drop+5)*p.clusterR+Math.sin(motion*1.4+p.phase)*1.5,ang=p.clusterA+Math.sin(motion+p.phase)*.22;px=promoterX+Math.cos(ang)*rr;py=promoterY+Math.sin(ang)*rr}
+      if(isDrop){const tailAngle=p.tailA+Math.sin(motion*.8+p.phase)*.35,dx=Math.cos(tailAngle),dy=Math.sin(tailAngle),nx=-dy,ny=dx,tailWave=Math.sin(motion*1.5+p.phase)*2;x.strokeStyle='#6d4aff';x.lineWidth=1.15;x.lineCap='round';x.beginPath();x.moveTo(px+dx*(TF_RADIUS-1),py+dy*(TF_RADIUS-1));x.bezierCurveTo(px+dx*5+nx*(2+tailWave),py+dy*5+ny*(2+tailWave),px+dx*7-nx*(2-tailWave),py+dy*7-ny*(2-tailWave),px+dx*10,py+dy*10);x.stroke()}
       x.fillStyle=isDrop?'#6d4aff':'#777';x.beginPath();x.arc(px,py,TF_RADIUS,0,Math.PI*2);x.fill();x.strokeStyle='#fff';x.lineWidth=.65;x.stroke();
     }
     /* Draw the promoter last so it remains visible inside the Drop-SA condensate. */
